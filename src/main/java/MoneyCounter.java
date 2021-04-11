@@ -1,9 +1,7 @@
-import java.util.List;
-import java.util.Set;
 
 public class MoneyCounter {
-    public double counter(List<Integer> massive, double count) {
-        switch (massive.size()) {
+    public double counter(int counts) { //Рассчет
+        switch (counts) {
             case 1:
                 return 400;
             case 2:
