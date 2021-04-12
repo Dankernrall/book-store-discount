@@ -39,3 +39,28 @@ public class BookStore {
     }
 
 }
+/* Попытка сделать через HashMap
+    int count = 0;
+    int finalPrice = 0;
+    MoneyCounter check = new MoneyCounter();
+    List<Integer> books = Arrays.asList(1, 1, 2, 3, 3, 3, 5, 4, 4, 5, 1);
+    HashMap<Integer, Integer> copyingOfBooks = new HashMap();
+        for (Integer b : books) {
+                int newValue = copyingOfBooks.getOrDefault(b, 0) + 1;
+                copyingOfBooks.put(b, newValue);
+                }
+public void doIt(HashMap<Integer, Integer> copyingOfBooks){
+        for (int i = 1; i < copyingOfBooks.size() + 1; i++) {
+        System.out.println(copyingOfBooks.values());
+        while (copyingOfBooks.containsKey(i) && copyingOfBooks.get(i) > 1) {
+        count++;
+        copyingOfBooks.replace(i, copyingOfBooks.get(i), copyingOfBooks.get(i) - 1);
+        continue;
+        }
+        if(!copyingOfBooks.containsValue(2)){
+        count++;
+        copyingOfBooks.replace(i, copyingOfBooks.get(i), copyingOfBooks.get(i) - 1);}
+
+        //else{copyingOfBooks.replace(i, copyingOfBooks.get(i), copyingOfBooks.get(i) - 1);count++;}
+        }
+        System.out.println(copyingOfBooks);} */
