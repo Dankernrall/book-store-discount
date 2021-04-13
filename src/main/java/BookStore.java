@@ -21,28 +21,26 @@ public class BookStore {
             copyingOfBooks.put(b, newValue);
         }
         first = false;
-        }                        //здесь
-        while(count < Collections.max(copyingOfBooks.values())){
-            for (int i = 1; i < copyingOfBooks.size()+1; i++) {
+        }
+//здесь
+        while(count < Collections.max(books) && count <Collections.max(copyingOfBooks.values())){
+            for (int i = 1; i < copyingOfBooks.size()+2; i++) {
+                try{
                 if(size % 8 == 0 && count == 4){
                     finalPrice += check.counter(count);
                     count = 0;
                     break;}
-                while (copyingOfBooks.containsKey(i) && copyingOfBooks.get(i) > 1) {
+                if (copyingOfBooks.get(i) > 1 && y!=i) {
                     y = i;
-                    count++;
-                    copyingOfBooks.replace(i, copyingOfBooks.get(i), copyingOfBooks.get(i) - 1);
-                    break;
-                }
-                if(count==5)
-                    break;
-                if (!copyingOfBooks.containsValue(2) && !copyingOfBooks.containsValue(3) && copyingOfBooks.get(i) != 0 && y != i) {
-                    copyingOfBooks.replace(i, copyingOfBooks.get(i), copyingOfBooks.get(i) - 1);
+                    copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
                     count++;
                 }
-                y=0;
-
-
+                else if (y!=i && copyingOfBooks.get(i) == 1 && Collections.max(copyingOfBooks.values()) ==1)  {
+                    copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
+                    count++;
+                }
+                    y=0;
+                }catch(NullPointerException e){}
             }}
         finalPrice += check.counter(count);
         count = 0;
