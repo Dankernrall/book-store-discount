@@ -1,51 +1,59 @@
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class BookStore {
-    MoneyCounter check = new MoneyCounter();
-    int count = 0;
-    int finalPrice = 0;
-    int y = 0;
-    int size = 0;
-    boolean first = true;
-    HashMap<Integer, Integer> copyingOfBooks = new HashMap();
+    Set<Integer> uniqKeys = new TreeSet<>();
+    List<Integer> notUniq = new ArrayList<>();
+    double count = 0; //Сумма денег
+    int counts = 0; //Количество уникальных книг
+    boolean first = true;  //Запуск только один раз
+    int forFive, forThree;
 
-    public int calculateBasketCost(List<Integer> books) {
-        if(books.isEmpty())
-            return 0;
-        if(first){
-        for (Integer b : books) {
-            size++;
-            int newValue = copyingOfBooks.getOrDefault(b, 0) + 1;
-            copyingOfBooks.put(b, newValue);
+    public double calculateBasketCost(List<Integer> books) {
+        if (first) {  //Так как List<Integer> books является не модифицируемым листом
+            first = false; //то забиваем его в наш лист.
+            notUniq.addAll(books);
         }
-        first = false;
+        uniqKeys.addAll(notUniq); //Переносим все значения в TreeSet, благодаря чему получаем только уникальные значения, без повторений
+        for (int i = 0; i < uniqKeys.toArray().length; i++) {
+            counts++; //Прибавляем книгу в "связку" уникальных книг
+            notUniq.remove(uniqKeys.toArray()[i]); //Удаляем уникальное число из корзины
         }
-//здесь
-        while(count < Collections.max(books) && count <Collections.max(copyingOfBooks.values())){
-            for (int i = 1; i < copyingOfBooks.size()+2; i++) {
-                try{
-                if(size % 8 == 0 && count == 4){
-                    finalPrice += check.counter(count);
-                    count = 0;
-                    break;}
-                if (copyingOfBooks.get(i) > 1 && y!=i) {
-                    y = i;
-                    copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
-                    count++;
-                }
-                else if (y!=i && copyingOfBooks.get(i) == 1 && Collections.max(copyingOfBooks.values()) ==1)  {
-                    copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
-                    count++;
-                }
-                    y=0;
-                }catch(NullPointerException e){}
-            }}
-        finalPrice += check.counter(count);
-        count = 0;
-        if (Collections.max(copyingOfBooks.values()) > 0)
-            calculateBasketCost(books);
-        return finalPrice;
+        switch (counts) {
+            case 1:
+                count += 400;
+                break;
+            case 2:
+                count += 800 * 0.95;
+                break;
+            case 3:
+                forThree++;
+                break;
+            case 4:
+                count += 1600 * 0.80;
+                break;
+            case 5:
+                forFive++;
+                break;
+        }
+        counts = 0;
+        uniqKeys.clear();
+        if (notUniq.size() > 0) {
+            calculateBasketCost(notUniq); //Если массив еще полностью не очищен, запускаем заново.
+        }
+        //Рассчет
+        while (forThree > 0 || forFive > 0) { //Пока имеются уникальные наборы книг по 3 и 5 штук
+            if (forThree != 0 && forFive != 0) { // Разбиваем по 4 группы
+                count += (1600 * 0.80) * 2;
+                forThree--;
+                forFive--;
+            } else if (forThree == 0) { // Заносим в итоговую стоимость уникальную группу книг из 5
+                count += 2000 * 0.75;
+                forFive--;
+            } else {
+                count += 1200 * 0.90; // Заносим в итоговую стоимость уникальную группу книг из 3
+                forThree--;
+            }
+        }
+        return this.count; //Возвращаем сумму
     }
 }
