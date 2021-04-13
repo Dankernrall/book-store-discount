@@ -37,7 +37,7 @@ public class BookStore {
                     }
                     lastPosI = 0; //Обнуляем последнюю позицию i
                 } catch (NullPointerException e) {
-                    //SKIP
+                    //SKIPEXC
                 }
             }
         }
