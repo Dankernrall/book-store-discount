@@ -1,59 +1,78 @@
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class BookStore {
-    Set<Integer> uniqKeys = new TreeSet<>();
-    List<Integer> notUniq = new ArrayList<>();
-    double count = 0; //Сумма денег
-    int counts = 0; //Количество уникальных книг
-    boolean first = true;  //Запуск только один раз
-    int forFive, forThree;
+    int count = 0;  // Счет уникальных книг
+    int finalPrice = 0; // Финальная цена с учетом скидок
+    int forThree, forFive; // Переменные для набора книг по 4
+    int lastPosI = 0;  // Последняя позиция i для цикла
+    int size = 0; // Размер пришедшей корзины
+    boolean first = true; // Для отработки кода один раз
+    HashMap<Integer, Integer> copyingOfBooks = new HashMap<>();
 
-    public double calculateBasketCost(List<Integer> books) {
-        if (first) {  //Так как List<Integer> books является не модифицируемым листом
-            first = false; //то забиваем его в наш лист.
-            notUniq.addAll(books);
+    public int calculateBasketCost(List<Integer> books) {
+        if (books.isEmpty()) // Проверка на пустую корзину
+            return 0;
+        //Заполняем HashMap по принципу: key - номер книги, value - их количество
+        if (first) {
+            for (Integer b : books) {
+                size++;
+                int newValue = copyingOfBooks.getOrDefault(b, 0) + 1;
+                copyingOfBooks.put(b, newValue);
+            }
+            first = false;
         }
-        uniqKeys.addAll(notUniq); //Переносим все значения в TreeSet, благодаря чему получаем только уникальные значения, без повторений
-        for (int i = 0; i < uniqKeys.toArray().length; i++) {
-            counts++; //Прибавляем книгу в "связку" уникальных книг
-            notUniq.remove(uniqKeys.toArray()[i]); //Удаляем уникальное число из корзины
+//Проходимся по циклу, пока количество уникальных книг меньше максимального количества value в HashMap
+        while (count < Collections.max(copyingOfBooks.values())) {
+            for (int i = 1; i < copyingOfBooks.size() + 2; i++) {
+                try {
+                    if (copyingOfBooks.get(i) > 1) { //Пока количество(value) книг по ключу i больше 1, берем их
+                        lastPosI = i;
+                        copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
+                        count++;
+                    } else if (copyingOfBooks.get(i) == 1 && copyingOfBooks.get(i) != 0) { //Далее берем книги в единичном экземпляре
+                        copyingOfBooks.replace(i, copyingOfBooks.get(i) - 1);
+                        count++;
+                    }
+                    lastPosI = 0; //Обнуляем последнюю позицию i
+                } catch (NullPointerException e) {
+                }
+            }
         }
-        switch (counts) {
+        switch (count) {
             case 1:
-                count += 400;
+                finalPrice += 400;
                 break;
             case 2:
-                count += 800 * 0.95;
+                finalPrice += 800 * 0.95;
                 break;
             case 3:
                 forThree++;
                 break;
             case 4:
-                count += 1600 * 0.80;
+                finalPrice += 1600 * 0.80;
                 break;
             case 5:
                 forFive++;
                 break;
         }
-        counts = 0;
-        uniqKeys.clear();
-        if (notUniq.size() > 0) {
-            calculateBasketCost(notUniq); //Если массив еще полностью не очищен, запускаем заново.
-        }
-        //Рассчет
+        count = 0;
+        if (Collections.max(copyingOfBooks.values()) > 0)
+            calculateBasketCost(books);
         while (forThree > 0 || forFive > 0) { //Пока имеются уникальные наборы книг по 3 и 5 штук
             if (forThree != 0 && forFive != 0) { // Разбиваем по 4 группы
-                count += (1600 * 0.80) * 2;
+                finalPrice += (1600 * 0.80) * 2;
                 forThree--;
                 forFive--;
             } else if (forThree == 0) { // Заносим в итоговую стоимость уникальную группу книг из 5
-                count += 2000 * 0.75;
+                finalPrice += 2000 * 0.75;
                 forFive--;
             } else {
-                count += 1200 * 0.90; // Заносим в итоговую стоимость уникальную группу книг из 3
+                finalPrice += 1200 * 0.90; // Заносим в итоговую стоимость уникальную группу книг из 3
                 forThree--;
             }
         }
-        return this.count; //Возвращаем сумму
+        return finalPrice;
     }
 }
